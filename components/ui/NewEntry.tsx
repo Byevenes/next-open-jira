@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import { AddCircleOutlineOutlined, SaveOutlined } from '@mui/icons-material'
 import { Box, Button, TextField } from '@mui/material'
 import { useEntriesActions } from '../../store'
-import { useAtom } from 'jotai'
-import { isAddingAtom } from '../../atom'
+import { useAtom, useSetAtom } from 'jotai'
+import { addEntryAtom, isAddingAtom } from '../../atom'
 
 export const NewEntry = () => {
-  const { addEntry } = useEntriesActions()
+  const addEntry = useSetAtom(addEntryAtom)
+
+  //const { addEntry } = useEntriesActions()
 
   const [isAdding, toggleAdding] = useAtom(isAddingAtom)
 

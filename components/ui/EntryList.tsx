@@ -1,10 +1,9 @@
 import { List, Paper } from '@mui/material'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC } from 'react'
 import { EntryStatus } from '../../types'
 import { EntryCard } from './EntryCard'
-import { useEntries, useEntriesActions, useEntriesByStatus } from '../../store'
-import { useAtom } from 'jotai'
-import { isDraggingAtom } from '../../atom'
+import { useAtom, useSetAtom, useAtomValue } from 'jotai'
+import { entriesAtom, isDraggingAtom, updateEntryAtom, useFilterEntriesAtom } from '../../atom'
 
 type Props = {
   status: EntryStatus
@@ -12,25 +11,26 @@ type Props = {
 
 export const EntryList: FC<Props> = ({ status }) => {
   const [isDragging, toggleDragging] = useAtom(isDraggingAtom)
+  const entries = useAtomValue(entriesAtom)
 
-  const [loading, setLoading] = useState(true)
+  const updateEntry = useSetAtom(updateEntryAtom)
 
-  const entriesByStatus = useEntriesByStatus(status)
+  const filter = useFilterEntriesAtom(status)
 
-  const entries = useEntries()
+  //const entriesByStatus = useEntriesByStatus(status)
 
-  const { updateEntry } = useEntriesActions()
+  // const entries = useEntries()
 
-  useEffect(() => {
-    setLoading(false)
-  }, [])
+  // const { updateEntry } = useEntriesActions() 
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     const id = e.dataTransfer.getData('entryId')
-    const entry = entries.find((entry) => entry._id === id)!
-    entry.status = status
-    updateEntry(entry)
-    toggleDragging(false)
+    const entry = entries.find((entry) => entry._id === id)
+    if (entry) {
+      entry.status = status
+      updateEntry(entry)
+      toggleDragging(false)
+    }
   }
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -52,7 +52,7 @@ export const EntryList: FC<Props> = ({ status }) => {
     >
       <Paper sx={{ height: 'calc(100vh - 180px)', overflow: 'scroll', backgroundColor: 'transparent', p: '3px 5px' }}>
         <List sx={{ opacity: isDragging ? 0.2 : 1, transition: 'all .3s' }}>
-          {!loading && entriesByStatus.map((entry) => (
+          {filter.map((entry) => (
             <EntryCard key={entry._id} entry={entry} />
           ))}
         </List>
