@@ -13,7 +13,10 @@ export type EntriesState = {
 
 export type EntriesAction = {
   setEntries: (entries: Entry[]) => void
+  addEntry: (newDescription: string) => void
+  updateEntry: (entry: Entry) => void
   reset: () => void
+  filterEntries: (status: EntryStatus) => Entry[]
 }
 
 export type EntriesStore = EntriesState & {
